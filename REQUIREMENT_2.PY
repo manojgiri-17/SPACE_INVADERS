@@ -60,6 +60,9 @@ class Bullet:
 player = Defender(WIDTH//2 - 35, HEIGHT - 80)
 player_bullets = []
 
+invaders = []
+invader_bullets = []
+
 running = True
 while running:
     dt = clock.tick(FPS)
@@ -85,6 +88,33 @@ while running:
     # -------- UPDATE BULLETS --------
     for b in player_bullets[:]:
         b.update()
+        # Remove bullets off-screen
+        if b.rect.y < -20:
+            player_bullets.remove(b)
+        else:
+            # Check collision with invaders
+            for inv in invaders[:]:
+                if b.rect.colliderect(inv.rect):
+                    player_bullets.remove(b)
+                    invaders.remove(inv)
+                    break
+
+    for b in invader_bullets[:]:
+        b.update()
+        if b.rect.y > HEIGHT + 20:
+            invader_bullets.remove(b)
+        else:
+            # Check collision with player
+            if b.rect.colliderect(player.rect):
+                invader_bullets.remove(b)
+                player.lives -= 1
+                if player.lives > 0:
+                    # respawn player at center
+                    player.x = WIDTH//2 - player.WIDTH//2
+                    player.y = HEIGHT - 80
+                else:
+                    print("Game Over")
+                    running = False
 
     # -------- DRAW --------
     screen.fill(BG_COLOR)
