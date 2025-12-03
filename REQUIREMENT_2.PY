@@ -43,8 +43,22 @@ class Defender:
         else:
             pygame.draw.rect(surf, (40,200,40), self.rect)
 
+# ---------------- BULLET CLASS -----------------
+class Bullet:
+    def __init__(self, x, y, vy, color):
+        self.rect = pygame.Rect(x, y, 6, 12)
+        self.vy = vy
+        self.color = color
+
+    def update(self):
+        self.rect.y += self.vy
+
+    def draw(self, surf):
+        pygame.draw.rect(surf, self.color, self.rect)
+
 # ---------------- GAME SETUP -----------------
 player = Defender(WIDTH//2 - 35, HEIGHT - 80)
+player_bullets = []
 
 running = True
 while running:
@@ -54,6 +68,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Shoot bullet on key press
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player_bullets.append(Bullet(player.x + player.WIDTH//2 - 3, player.y, -8, YELLOW))
     
     # -------- PLAYER MOVEMENT --------
     keys = pygame.key.get_pressed()
@@ -63,10 +81,17 @@ while running:
         player.x += player.speed
 
     player.update()
+    
+    # -------- UPDATE BULLETS --------
+    for b in player_bullets[:]:
+        b.update()
 
     # -------- DRAW --------
     screen.fill(BG_COLOR)
     player.draw(screen)
+    
+    for b in player_bullets:
+        b.draw(screen) 
     
     pygame.display.update()
 
