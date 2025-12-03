@@ -57,6 +57,13 @@ def spawn_invaders(cols=10, start_x=40, start_y=80, sx=48, sy=48):
 
 spawn_invaders()
 
+# ------------------ MOVEMENT VARIABLES ------------------
+move_right = True
+initial_enemy_speed = 0.3
+enemy_speed = initial_enemy_speed
+total_invaders = len(invaders)
+enemy_drop = 18
+
 running = True
 
 # ============ GAME LOOP =================
@@ -67,6 +74,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    # -------- LEFT / RIGHT MOVING + DROPPING --------
+    move_down = False
+    for inv in invaders:
+        test_x = inv.x + (enemy_speed if move_right else -enemy_speed)
+        if test_x <= 8 or test_x + inv.rect.width >= WIDTH - 8:
+            move_down = True
+            break
+
+    for inv in invaders:
+        inv.x += enemy_speed if move_right else -enemy_speed
+
+    if move_down:
+        move_right = not move_right
+        for inv in invaders:
+            inv.y += enemy_drop
+
     # ====== DRAW SECTION ======
     screen.fill((10,10,20))
 
