@@ -55,6 +55,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    # -------- PLAYER MOVEMENT --------
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and player.x > 8:
+        player.x += player.speed
+    if keys[pygame.K_RIGHT] and player.x < WIDTH - player.WIDTH - 8:
+        player.x -= player.speed
+
+    player.update()
+
     # -------- DRAW --------
     screen.fill(BG_COLOR)
     player.draw(screen)
