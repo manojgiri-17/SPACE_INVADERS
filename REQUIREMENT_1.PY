@@ -37,6 +37,22 @@ class Invader:
         else:
             pygame.draw.rect(surf, (200, 200, 200), self.rect)
 
+# ------------------ BULLET CLASS ------------------
+class Bullet:
+    def __init__(self, x, y, vy, color):
+        self.x = x
+        self.y = y
+        self.vy = vy
+        self.color = color
+        self.rect = pygame.Rect(x, y, 6, 12)
+
+    def update(self):
+        self.y += self.vy
+        self.rect.y = self.y
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+
 # ------------------ SPAWNING INVADERS ------------------
 rows_setup = [
     (inv1_img, 30),
@@ -56,6 +72,11 @@ def spawn_invaders(cols=10, start_x=40, start_y=80, sx=48, sy=48):
             invaders.append(Invader(x, y, img, pts))
 
 spawn_invaders()
+
+# ------------------ ENEMY BULLET SYSTEM ------------------
+enemy_bullets = []
+enemy_shoot_rate = 2500
+last_enemy_shot = pygame.time.get_ticks()
 
 # ------------------ MOVEMENT VARIABLES ------------------
 move_right = True
@@ -89,6 +110,20 @@ while running:
         move_right = not move_right
         for inv in invaders:
             inv.y += enemy_drop
+    # -------- ENEMY SHOOTING --------
+    now = pygame.time.get_ticks()
+    if now - last_enemy_shot > enemy_shoot_rate and invaders:
+        shooter = random.choice(invaders)
+        bx = shooter.x + shooter.WIDTH//2 - 3
+        by = shooter.y + shooter.HEIGHT
+        enemy_bullets.append(Bullet(bx, by, 6, (255, 20, 20)))
+        last_enemy_shot = now
+    
+    # -------- UPDATE ENEMY BULLETS --------
+    for b in enemy_bullets[:]:
+        b.update()
+        if b.y > HEIGHT:
+            enemy_bullets.remove(b)
 
     # ====== DRAW SECTION ======
     screen.fill((10,10,20))
@@ -96,6 +131,9 @@ while running:
     for inv in invaders:
         inv.update()
         inv.draw(screen)
+    
+    for b in enemy_bullets:
+        b.draw(screen)
     
     pygame.display.update()
 
