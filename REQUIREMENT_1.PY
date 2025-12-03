@@ -95,6 +95,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    # -------- SPEED INCREASE BASED ON REMAINING INVADERS --------
+    dead = total_invaders - len(invaders)
+    enemy_speed = 0.3 + dead * 0.07
+
     # -------- LEFT / RIGHT MOVING + DROPPING --------
     move_down = False
     for inv in invaders:
