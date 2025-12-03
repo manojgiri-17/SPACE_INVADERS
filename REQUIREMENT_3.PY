@@ -7,7 +7,10 @@ pygame.display.set_caption("Space Invaders")
 clock = pygame.time.Clock()
 FPS = 60
 
+WHITE = (255,255,255)
 GREEN = (50,220,50)
+YELLOW = (240,240,40)
+RED = (220,50,50)
 BG = (6,6,12)
 
 class Barrier:
@@ -35,6 +38,9 @@ for i in range(4):
     by = HEIGHT - 200
     barriers.append(create_barrier(bx, by))
 
+player_bullets = []
+enemy_bullets = []
+
 running = True
 timer = 0
 
@@ -47,6 +53,35 @@ while running:
             pygame.quit()
             sys.exit()
     
+    # movement  
+    for b in player_bullets[:]:
+        b.update()
+        if b.y < -10:
+            player_bullets.remove(b)
+            continue
+
+        # check barrier collision
+        for barrier in barriers:
+            for block in barrier:
+                if block.exists and b.rect.colliderect(block.rect):
+                    block.exists = False
+                    player_bullets.remove(b)
+                    break
+    
+    for b in enemy_bullets[:]:
+        b.update()
+        if b.y > HEIGHT:
+            enemy_bullets.remove(b)
+            continue
+
+        # collision with barrier
+        for barrier in barriers:
+            for block in barrier:
+                if block.exists and b.rect.colliderect(block.rect):
+                    block.exists = False
+                    enemy_bullets.remove(b)
+                    break
+
     screen.fill(BG)
 
     # draw barriers
